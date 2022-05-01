@@ -27,13 +27,13 @@
 template <typename net_type>
 dlib::matrix<double,1,5> eval_net_performance(
     net_type &net,
-    std::array<dlib::matrix<uint16_t>, img_depth> &img_in,
+    std::array<dlib::matrix<uint8_t>, img_depth> &img_in,
     dlib::matrix<uint16_t> &gt_in,
     dlib::matrix<uint16_t> &map_out, 
     std::pair<uint64_t, uint64_t> crop_size
 )
 {
-    std::array<dlib::matrix<uint16_t>, img_depth> img_crop;
+    std::array<dlib::matrix<uint8_t>, img_depth> img_crop;
     dlib::matrix<uint16_t> gt;
     dlib::matrix<uint16_t> gt_crop;
     dlib::matrix<float> gt_cropf, dm_f;
@@ -98,7 +98,7 @@ dlib::matrix<double,1,5> eval_net_performance(
     v_gt = (double)dlib::variance(gt_cropf);
     v_dm = (double)dlib::variance(dm_f);
 
-    dlib::matrix<double, 1, 5> res = dlib::zeros_matrix<double>(1, 6);
+    dlib::matrix<double, 1, 5> res = dlib::zeros_matrix<double>(1, 5);
     res = nmae_val, nrmse_val, ssim_val, v_gt, v_dm;
     
     return res;
@@ -110,7 +110,7 @@ dlib::matrix<double,1,5> eval_net_performance(
 template <typename net_type>
 dlib::matrix<double, 1, 5> eval_all_net_performance(
     net_type &net,
-    std::vector<std::array<dlib::matrix<uint16_t>, img_depth>> &img_in,    
+    std::vector<std::array<dlib::matrix<uint8_t>, img_depth>> &img_in,    
     std::vector<dlib::matrix<uint16_t>> &gt_in,
     std::pair<uint64_t, uint64_t> crop_size
 )
@@ -119,7 +119,7 @@ dlib::matrix<double, 1, 5> eval_all_net_performance(
     DLIB_CASSERT(img_in.size() == gt_in.size());
 
     dlib::matrix<uint16_t> map;
-    dlib::matrix<double, 1, 5> results = dlib::zeros_matrix<double>(1,6);
+    dlib::matrix<double, 1, 5> results = dlib::zeros_matrix<double>(1, 5);
 
     // cycle through each input image and evaluate
     for (idx = 0; idx < img_in.size(); ++idx)
