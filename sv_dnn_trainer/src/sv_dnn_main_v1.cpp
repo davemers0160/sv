@@ -164,7 +164,7 @@ int main(int argc, char** argv)
     //std::vector<std::pair<uint64_t, uint64_t>> crop_sizes; // height, width
     std::vector<uint32_t> filter_num;
     uint64_t max_one_step_count;
-    uint32_t expansion_factor;
+    //uint32_t expansion_factor;
     double std = 2.0;
     std::vector<int32_t> gpu = { 0 };
     std::array<float, img_depth> avg_color;
@@ -213,7 +213,7 @@ int main(int argc, char** argv)
     // check the input scaling factors.  if they are the same then the expansion factor for the cropper is all 8
     // otherwise the expansion factor is 4
     //if(ci.scale.first == ci.scale.second)
-    expansion_factor = 8;
+    //expansion_factor = 8;
     //else
     //    expansion_factor = 4;
 
@@ -263,6 +263,8 @@ int main(int argc, char** argv)
 
 #endif
     
+    std::cout << get_cuda_devices() << std::endl;    
+    
     std::cout << "Reading Inputs... " << std::endl;
     std::cout << "Platform:             " << platform << std::endl;
     std::cout << "GPU:                  { ";
@@ -279,14 +281,14 @@ int main(int argc, char** argv)
         get_current_time(sdate, stime);
         log_filename = log_filename + sdate + "_" + stime + ".txt";
 
-        std::cout << "Log File:             " << (output_save_location + log_filename) << std::endl << std::endl;
+        std::cout << "Log File:             " << (output_save_location + log_filename) << std::endl;
         data_log_stream.open((output_save_location + log_filename), ios::out | ios::app);
         
         // Add the date and time to the start of the log file
         data_log_stream << "#------------------------------------------------------------------------------" << std::endl;
         data_log_stream << "Version: 2.0    Date: " << sdate << "    Time: " << stime << std::endl << std::endl;
 
-        std::cout << get_cuda_devices() << std::endl;
+
 
         data_log_stream << "#------------------------------------------------------------------------------" << std::endl;
         data_log_stream << get_cuda_devices() << std::endl;
@@ -391,7 +393,7 @@ int main(int argc, char** argv)
 
         // these are statically set right now.  need to update vs_gen code to output the min/max dm values for a given scenario
         uint16_t min_val = 0;
-        uint16_t max_val = 22;
+        uint16_t max_val = 255;
 
         //-----------------------------------------------------------------------------
         // read in the blur params
@@ -433,7 +435,7 @@ int main(int argc, char** argv)
         cropper.set_chip_dims(ci.train_crop_sizes);
         cropper.set_seed(time(0));
         //cropper.set_scale(ci.scale);
-        cropper.set_expansion_factor(expansion_factor);
+        //cropper.set_expansion_factor(expansion_factor);
         //cropper.set_stats_filename((output_save_location + cropper_stats_file));
 
         std::cout << "Input Array Depth: " << img_depth << std::endl;
@@ -550,7 +552,7 @@ int main(int argc, char** argv)
                     //apply_uniform_noise((uint8_t)0, (uint8_t)255, tc, rnd, std);
                     apply_poisson_noise(tc, ci.noise_std, rnd, 0.0, 255.0);
 
-                    scale_intensity(tc, rnd, 0.3, 1.0);
+                    //scale_intensity(tc, rnd, 0.3, 1.0);
                 }
 
                 trainer.train_one_step(tr_crop, gt_crop);
