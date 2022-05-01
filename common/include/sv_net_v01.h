@@ -41,13 +41,14 @@ template <long num_filters, typename SUBNET> using cont5u = dlib::cont<num_filte
 template <long num_filters, typename SUBNET> using cont7u = dlib::cont<num_filters, 7, 7, 2, 2, SUBNET>;
 template <long num_filters, typename SUBNET> using cont9u = dlib::cont<num_filters, 9, 9, 2, 2, SUBNET>;
 
+template <long num_filters, typename SUBNET> using con39 = dlib::con<num_filters, 3, 9, 1, 1, SUBNET>;
 template <long num_filters, typename SUBNET> using con93 = dlib::con<num_filters, 9, 3, 1, 1, SUBNET>;
 
 // ----------------------------------------------------------------------------------------
 
 /*
 
-input -> tag10-> cbp9_blk -> sv_res_77 [dtago1] ----------------------> [dtagi1] cbp3_blk -> sv_res_33 -> prelu -> bn_con -> con3(N) -> output
+input -> tag10-> cbp39_blk -> sv_res_77 [dtago1] ----------------------> [dtagi1] cbp3_blk -> sv_res_33 -> prelu -> bn_con -> con3(N) -> output
                                  \                                                   /
                                 con2d                                             cont2u
                                    \                                               /
@@ -67,7 +68,8 @@ template<typename SUBNET> using up2 = dlib::upsample<2, SUBNET>;
 template <int N, typename SUBNET> using cbp3_blk = dlib::prelu<dlib::bn_con<con3<N, SUBNET>>>;
 template <int N, typename SUBNET> using cbp5_blk = dlib::prelu<dlib::bn_con<con5<N, SUBNET>>>;
 template <int N, typename SUBNET> using cbp7_blk = dlib::prelu<dlib::bn_con<con7<N, SUBNET>>>;
-template <int N, typename SUBNET> using cbp9_blk = dlib::prelu<dlib::bn_con<con9<N, SUBNET>>>;
+
+template <int N, typename SUBNET> using cbp39_blk = dlib::prelu<dlib::bn_con<con39<N, SUBNET>>>;
 
 template <int N1, int N2, typename SUBNET> using sv_block_33 = con3<N1, dlib::prelu<dlib::bn_con<con3<N2, SUBNET>>>>;
 template <int N1, int N2, typename SUBNET> using sv_block_35 = con3<N1, dlib::prelu<dlib::bn_con<con5<N2, SUBNET>>>>;
@@ -108,7 +110,8 @@ using sv_res_77 = dlib::add_prev1<sv_block_77<N1,N2, dlib::tag1<SUBNET>>>;
 template <int N, typename SUBNET> using acbp3_blk = dlib::prelu<dlib::affine<con3<N, SUBNET>>>;
 template <int N, typename SUBNET> using acbp5_blk = dlib::prelu<dlib::affine<con5<N, SUBNET>>>;
 template <int N, typename SUBNET> using acbp7_blk = dlib::prelu<dlib::affine<con7<N, SUBNET>>>;
-template <int N, typename SUBNET> using acbp9_blk = dlib::prelu<dlib::affine<con9<N, SUBNET>>>;
+
+template <int N, typename SUBNET> using cbp39_blk = dlib::prelu<dlib::affine<con39<N, SUBNET>>>;
 
 template <int N1, int N2, typename SUBNET> using asv_block_33 = con3<N1, dlib::prelu<dlib::affine<con3<N2, SUBNET>>>>;
 template <int N1, int N2, typename SUBNET> using asv_block_55 = con5<N1, dlib::prelu<dlib::affine<con5<N2, SUBNET>>>>;
@@ -147,7 +150,7 @@ using sv_net_type = dlib::loss_multiclass_log_per_pixel<
     
     dtago2<sv_res_33<512, 512, con2d<512,
     
-    dtago1<sv_res_77<256, 256, cbp9_blk<256, 
+    dtago1<sv_res_33<256, 256, cbp39_blk<256, 
     dlib::tag10<dlib::input_sv_array<uint16_t, img_depth>>
     //dlib::input_sv_array<uint16_t, img_depth>
     >>> >>> >>>> > >>>> > >>>>> >;
@@ -166,7 +169,7 @@ using asv_net_type = dlib::loss_multiclass_log_per_pixel<
     
     dtago2<asv_res_33<512,512,con2d<512,
     
-    dtago1<asv_res_77<256, 256, acbp9_blk<256, 
+    dtago1<asv_res_33<256, 256, acbp39_blk<256, 
     //dlib::input<std::array<dlib::matrix<uint16_t>, img_depth>
     dlib::tag10<dlib::input_sv_array<uint16_t, img_depth>>
     >>> >>> >>>> > >>>> > >>>>> >;
