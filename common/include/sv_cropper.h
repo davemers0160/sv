@@ -98,13 +98,13 @@ public:
  
 // ----------------------------------------------------------------------------------------
 
-        template<typename array_type1, typename array_type2>
-        void operator() (
+    template<typename image_type1, typename gt_type1, typename image_type2, typename gt_type2>
+    void operator() (
             const uint64_t num_crops,
-            const array_type1 &img,
-            const array_type2 &gt,
-            array_type1& img_crops,
-            array_type2& gt_crops
+            const image_type1& img,
+            const gt_type1& gt,
+            image_type2& img_crops,
+            gt_type2& gt_crops
         )
         {
 
@@ -120,13 +120,13 @@ public:
     
 // ----------------------------------------------------------------------------------------
 
-    template<typename array_type1, typename image_type1>
-    void append(
+        template<typename image_type1, typename gt_type1, typename image_type2, typename gt_type2>
+        void append(
         const uint64_t num_crops,
-        const array_type1 &img,
-        const image_type1 &gt,
-        array_type1& img_crops,
-        image_type1& gt_crops
+        const image_type1& img,
+        const gt_type1&gt,
+        image_type2& img_crops,
+        gt_type2& gt_crops
     )
     {
 
@@ -150,7 +150,6 @@ public:
 
             (*this)(img[img_index], gt[img_index], &img_crops[idx*expansion_factor], &gt_crops[idx*expansion_factor], &cr_stats[idx]);
         });
-
 
         save_cropper_stats(cr_stats);
 
@@ -181,12 +180,12 @@ public:
         //    {
         //        uint64_t img_index = rnd.get_integer(img_count);
 
-                cr_stats[original_size].img_index = 0;
-                cr_stats[original_size].img_h = gt.nr();
-                cr_stats[original_size].img_w = gt.nc();
+        cr_stats[original_size].img_index = 0;
+        cr_stats[original_size].img_h = gt.nr();
+        cr_stats[original_size].img_w = gt.nc();
 
-                //(*this)(img, gt, &img_crops[idx * expansion_factor], &gt_crops[idx * expansion_factor], &cr_stats[idx]);
-                (*this)(img, gt, &img_crops[original_size], &gt_crops[original_size], &cr_stats[original_size]);
+        //(*this)(img, gt, &img_crops[idx * expansion_factor], &gt_crops[idx * expansion_factor], &cr_stats[idx]);
+        (*this)(img, gt, &img_crops[original_size], &gt_crops[original_size], &cr_stats[original_size]);
             //});
 
 
@@ -196,12 +195,12 @@ public:
 
 // ----------------------------------------------------------------------------------------
 
-    template<typename array_type1, typename image_type1, typename array_type2, typename image_type2, typename cr_struct>
+    template<typename image_type1, typename gt_type1, typename image_type2, typename gt_type2, typename cr_struct>
     void operator() (
-        const array_type1 &img,
-        const image_type1 &gt,
-        array_type2 img_crops,
-        image_type2 gt_crops,
+        const image_type1& img,
+        const gt_type1& gt,
+        image_type2 img_crops,
+        gt_type2 gt_crops,
         cr_struct cr_stats
         )
     {
@@ -217,8 +216,8 @@ public:
         cr_stats->x = rect_gt.left();
         cr_stats->y = rect_gt.top();
         
-        array_type1 img_t;
-        image_type1 gt_t;
+        //image_type2 img_t;
+        //gt_type2 gt_t;
 
         // switch (expansion_factor)
         // {
@@ -241,9 +240,9 @@ public:
         // get the crops
         for (idx = 0; idx < image_depth; ++idx)
         {
-            img_t[idx] = dlib::subm(img[idx], rect_img);
+            img_crops[0][idx] = dlib::subm(img[idx], rect_img);
         }
-        gt_t = dlib::subm(gt, rect_gt);
+        gt_crops[0] = dlib::subm(gt, rect_gt);
 
         // @mem((img_t[0].data).data, UINT16, 1, img_t[0].nc(),img_t[0].nr(),img_t[0].nc()*2)
         // @mem((gt_t.data).data, UINT16, 1, gt_t.nc(),gt_t.nr(),gt_t.nc()*2)
@@ -277,8 +276,8 @@ private:
 
     uint32_t expansion_factor = 2;
 
-    template <typename image_type1>
-    void make_random_cropping_rect(const image_type1& img, dlib::rectangle &rect_im, dlib::rectangle &rect_gt)
+    template <typename image_type>
+    void make_random_cropping_rect(const image_type& img, dlib::rectangle &rect_im, dlib::rectangle &rect_gt)
     {
         uint64_t x = 0, y = 0;
         

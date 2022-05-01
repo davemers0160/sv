@@ -151,7 +151,7 @@ using sv_net_type = dlib::loss_multiclass_log_per_pixel<
     dtago2<sv_res_33<512, 512, con2d<512,
     
     dtago1<sv_res_33<256, 256, cbp39_blk<256, 
-    dlib::tag10<dlib::input_sv_array<uint16_t, img_depth>>
+    dlib::tag10<dlib::input_sv_array<uint8_t, img_depth>>
     //dlib::input_sv_array<uint16_t, img_depth>
     >>> >>> >>>> > >>>> > >>>>> >;
     
@@ -171,7 +171,7 @@ using asv_net_type = dlib::loss_multiclass_log_per_pixel<
     
     dtago1<asv_res_33<256, 256, acbp39_blk<256, 
     //dlib::input<std::array<dlib::matrix<uint16_t>, img_depth>
-    dlib::tag10<dlib::input_sv_array<uint16_t, img_depth>>
+    dlib::tag10<dlib::input_sv_array<uint8_t, img_depth>>
     >>> >>> >>>> > >>>> > >>>>> >;
  
 
