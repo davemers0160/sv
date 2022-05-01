@@ -111,7 +111,7 @@ template <int N, typename SUBNET> using acbp3_blk = dlib::prelu<dlib::affine<con
 template <int N, typename SUBNET> using acbp5_blk = dlib::prelu<dlib::affine<con5<N, SUBNET>>>;
 template <int N, typename SUBNET> using acbp7_blk = dlib::prelu<dlib::affine<con7<N, SUBNET>>>;
 
-template <int N, typename SUBNET> using cbp39_blk = dlib::prelu<dlib::affine<con39<N, SUBNET>>>;
+template <int N, typename SUBNET> using acbp39_blk = dlib::prelu<dlib::affine<con39<N, SUBNET>>>;
 
 template <int N1, int N2, typename SUBNET> using asv_block_33 = con3<N1, dlib::prelu<dlib::affine<con3<N2, SUBNET>>>>;
 template <int N1, int N2, typename SUBNET> using asv_block_55 = con5<N1, dlib::prelu<dlib::affine<con5<N2, SUBNET>>>>;

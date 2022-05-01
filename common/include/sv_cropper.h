@@ -67,8 +67,8 @@ public:
     void set_chip_dims (std::pair<uint64_t, uint64_t> p)
     { set_chip_dims(dlib::chip_dims(p.first, p.second)); }
     
-    void set_scale_x(uint32_t x) { scale_x = x; }
-    void set_scale_y(uint32_t y) { scale_y = y; }
+    //void set_scale_x(uint32_t x) { scale_x = x; }
+    //void set_scale_y(uint32_t y) { scale_y = y; }
 
     // void set_scale(std::pair<uint32_t, uint64_t> p)
     // {
@@ -206,8 +206,8 @@ public:
         )
     {
         uint64_t idx = 0, jdx = 0;
-        uint32_t m = 1;
-        uint32_t e_f;
+        //uint32_t m = 1;
+        //uint32_t e_f;
         long image_depth = img.size();
 
         // get a cropping rectangle for a give image
@@ -283,7 +283,7 @@ private:
         uint64_t x = 0, y = 0;
         
         rect_im = dlib::resize_rect(rect_im, dims.cols, dims.rows);
-        rect_gt = dlib::resize_rect(rect_gt, (long)(dims.cols/(double)scale_x), (long)(dims.rows/(double)scale_y));
+        rect_gt = dlib::resize_rect(rect_gt, dims.cols, dims.rows);
        
         if ((unsigned long)img.nc() <= rect_gt.width())
             x = 0;
@@ -296,13 +296,10 @@ private:
             y = (uint64_t)(rnd.get_integer(img.nr() - rect_gt.height()));
             
         // randomly shift the box around
-        dlib::point tr_off(x*scale_x, y*scale_y);
-        rect_im = dlib::move_rect(rect_im, tr_off);
-        
-        dlib::point gt_off(x, y);
-        rect_gt = dlib::move_rect(rect_gt, gt_off);
+        dlib::point offset(x, y);
+        rect_im = dlib::move_rect(rect_im, offset);
+        rect_gt = dlib::move_rect(rect_gt, offset);
 
-        
     }	// end of make_random_cropping_rect    
 
     // ----------------------------------------------------------------------------------------
@@ -340,9 +337,9 @@ inline std::ostream& operator<< (
     out << "sv_cropper details: " << std::endl;
     out << "  chip_dims.rows:       " << item.get_chip_dims().rows << std::endl;
     out << "  chip_dims.cols:       " << item.get_chip_dims().cols << std::endl;
-    out << "  scale_x:              " << item.get_scale_x() << std::endl;
-    out << "  scale_y:              " << item.get_scale_y() << std::endl;
-    out << "  expansion_factor:     " << item.get_expansion_factor() << std::endl;
+    //out << "  scale_x:              " << item.get_scale_x() << std::endl;
+    //out << "  scale_y:              " << item.get_scale_y() << std::endl;
+    //out << "  expansion_factor:     " << item.get_expansion_factor() << std::endl;
     return out;
 }
 
