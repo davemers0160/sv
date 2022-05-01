@@ -64,19 +64,19 @@ void load_sv_data(
         // load in the data files
         std::array<dlib::matrix<uint8_t>, img_depth> t;
         dlib::matrix<uint16_t> tf, td;
-        dlib::matrix<dlib::rgb_pixel> f, f_tmp, d1, d1_tmp, d2, d2_tmp;
+        dlib::matrix<dlib::rgb_pixel> left_img, left_tmp, right_img, right_tmp, d2, d2_tmp;
         dlib::matrix<int16_t> horz_gradient, vert_gradient;
         dlib::matrix<uint16_t> g, g_tmp;
 
         // load the images into an rgb_pixel format
-        // Image Watch: @mem((f_tmp.data).data, UINT8, 3, f_tmp.nc(), f_tmp.nr(), f_tmp.nc()*3)
-        dlib::load_image(f_tmp, left_image_file);
-        dlib::load_image(d1_tmp, right_image_file);
+        // Image Watch: @mem((left_tmp.data).data, UINT8, 3, left_tmp.nc(), left_tmp.nr(), left_tmp.nc()*3)
+        dlib::load_image(left_tmp, left_image_file);
+        dlib::load_image(right_tmp, right_image_file);
         dlib::load_image(g_tmp, depthmap_file);
 
         // crop the images to the right network size
-        long rows = f_tmp.nr();
-        long cols = f_tmp.nc(); 
+        long rows = left_tmp.nr();
+        long cols = left_tmp.nc(); 
 
         int row_rem = (rows) % mod_params.first;
         if (row_rem != 0)
@@ -98,43 +98,43 @@ void load_sv_data(
                 cols = tc;
         }
 
-        f.set_size(rows, cols);
-        d1.set_size(rows, cols);
+        left_img.set_size(rows, cols);
+        right_img.set_size(rows, cols);
         g.set_size(rows, cols);
-        dlib::set_subm(f, 0, 0, rows, cols) = dlib::subm(f_tmp, 0, 0, rows, cols);
-        dlib::set_subm(d1, 0, 0, rows, cols) = dlib::subm(d1_tmp, 0, 0, rows, cols);
+        dlib::set_subm(left_img, 0, 0, rows, cols) = dlib::subm(left_tmp, 0, 0, rows, cols);
+        dlib::set_subm(right_img, 0, 0, rows, cols) = dlib::subm(right_tmp, 0, 0, rows, cols);
         dlib::set_subm(g, 0, 0, rows, cols) = dlib::subm(g_tmp, 0, 0, rows, cols);
         
         switch (img_depth)
         {
             //case 1:
-            //    rgb2gray(f, tf);
-            //    rgb2gray(d1, td);
+            //    rgb2gray(left_img, tf);
+            //    rgb2gray(right_img, td);
             //    
             //    t[0] = (td+256)-tf;
             //    break;
             
             case 2:
-                rgb2gray(f, t[0]);
-                rgb2gray(d1, t[1]);
+                rgb2gray(left_img, t[0]);
+                rgb2gray(right_img, t[1]);
                 break;
                 
             //case 3:
             //    // get the images size and resize the t array
             //    for (int m = 0; m < img_depth; ++m)
             //    {
-            //        t[m].set_size(f.nr(), f.nc());
+            //        t[m].set_size(left_img.nr(), left_img.nc());
             //    }
 				
             //    switch(secondary)
             //    {
 					//case 0:
-     //                   for (long r = 0; r < f.nr(); ++r)
+     //                   for (long r = 0; r < left_img.nr(); ++r)
      //                   {
-     //                       for (long c = 0; c < f.nc(); ++c)
+     //                       for (long c = 0; c < left_img.nc(); ++c)
      //                       {
      //                           dlib::rgb_pixel p;
-     //                           dlib::assign_pixel(p, f(r, c));
+     //                           dlib::assign_pixel(p, left_img(r, c));
      //                           dlib::assign_pixel(t[0](r, c), p.red);
      //                           dlib::assign_pixel(t[1](r, c), p.green);
      //                           dlib::assign_pixel(t[2](r, c), p.blue);
@@ -143,12 +143,12 @@ void load_sv_data(
 					//	break;
 					//	
 					//case 1:
-     //                   for (long r = 0; r < f.nr(); ++r)
+     //                   for (long r = 0; r < left_img.nr(); ++r)
      //                   {
-     //                       for (long c = 0; c < f.nc(); ++c)
+     //                       for (long c = 0; c < left_img.nc(); ++c)
      //                       {
      //                           dlib::rgb_pixel p;
-     //                           dlib::assign_pixel(p, d1(r, c));
+     //                           dlib::assign_pixel(p, right_img(r, c));
      //                           dlib::assign_pixel(t[0](r, c), p.red);
      //                           dlib::assign_pixel(t[1](r, c), p.green);
      //                           dlib::assign_pixel(t[2](r, c), p.blue);
@@ -157,21 +157,21 @@ void load_sv_data(
 					//	break;
 						
       //              case 2:
-						//rgb2gray(f, t[0]);
-						//rgb2gray(d1, t[1]);
+						//rgb2gray(left_img, t[0]);
+						//rgb2gray(right_img, t[1]);
       //                  t[2] = dlib::matrix_cast<uint16_t>(dlib::abs(dlib::matrix_cast<float>(t[1])- dlib::matrix_cast<float>(t[0])));
       //                  break;
 
       //              case 3:
-						//rgb2gray(f, t[0]);
-						//rgb2gray(d1, t[1]);
+						//rgb2gray(left_img, t[0]);
+						//rgb2gray(right_img, t[1]);
       //                  dlib::sobel_edge_detector(t[0], horz_gradient, vert_gradient);
       //                  dlib::assign_image(t[2], dlib::abs(horz_gradient)+dlib::abs(vert_gradient));
       //                  break;
 
       //              case 4:
-						//rgb2gray(f, t[0]);
-						//rgb2gray(d1, t[1]);
+						//rgb2gray(left_img, t[0]);
+						//rgb2gray(right_img, t[1]);
       //                  //dlib::spatially_filter_image(t[0], t[2], lap_kernel, 1, true, false);
       //                  break;
 
@@ -184,7 +184,7 @@ void load_sv_data(
                 // get the images size and resize the t array
                 for (int m = 0; m < img_depth; ++m)
                 {
-                    t[m].set_size(f.nr(), f.nc());
+                    t[m].set_size(left_img.nr(), left_img.nc());
                 }
 
                 switch (secondary)
@@ -193,16 +193,16 @@ void load_sv_data(
                     case 1:
                         // loop through the images and assign each color channel to one 
                         // of the array's of t
-                        for (long r = 0; r < f.nr(); ++r)
+                        for (long r = 0; r < left_img.nr(); ++r)
                         {
-                            for (long c = 0; c < f.nc(); ++c)
+                            for (long c = 0; c < left_img.nc(); ++c)
                             {
                                 dlib::rgb_pixel p;
-                                dlib::assign_pixel(p, f(r, c));
+                                dlib::assign_pixel(p, left_img(r, c));
                                 dlib::assign_pixel(t[0](r, c), p.red);
                                 dlib::assign_pixel(t[1](r, c), p.green);
                                 dlib::assign_pixel(t[2](r, c), p.blue);
-                                dlib::assign_pixel(p, d1(r, c));
+                                dlib::assign_pixel(p, right_img(r, c));
                                 dlib::assign_pixel(t[3](r, c), p.red);
                                 dlib::assign_pixel(t[4](r, c), p.green);
                                 dlib::assign_pixel(t[5](r, c), p.blue);
@@ -212,16 +212,16 @@ void load_sv_data(
 
                     // YCrCb version with each color channle going into it's own layer
                     //case 2:
-                    //    for (long r = 0; r < f.nr(); ++r)
+                    //    for (long r = 0; r < left_img.nr(); ++r)
                     //    {
-                    //        for (long c = 0; c < f.nc(); ++c)
+                    //        for (long c = 0; c < left_img.nc(); ++c)
                     //        {
                     //            dlib::ycrcb_pixel p;
-                    //            dlib::assign_pixel(p, f(r, c));
+                    //            dlib::assign_pixel(p, left_img(r, c));
                     //            dlib::assign_pixel(t[0](r, c), p.y);
                     //            dlib::assign_pixel(t[1](r, c), p.cr);
                     //            dlib::assign_pixel(t[2](r, c), p.cb);
-                    //            dlib::assign_pixel(p, d1(r, c));
+                    //            dlib::assign_pixel(p, right_img(r, c));
                     //            dlib::assign_pixel(t[3](r, c), p.y);
                     //            dlib::assign_pixel(t[4](r, c), p.cr);
                     //            dlib::assign_pixel(t[5](r, c), p.cb);
@@ -232,16 +232,16 @@ void load_sv_data(
 
                     // LAB version with each color channle going into it's own layer    
                     //case 3:
-                    //    for (long r = 0; r < f.nr(); ++r)
+                    //    for (long r = 0; r < left_img.nr(); ++r)
                     //    {
-                    //        for (long c = 0; c < f.nc(); ++c)
+                    //        for (long c = 0; c < left_img.nc(); ++c)
                     //        {
                     //            dlib::lab_pixel p;
-                    //            dlib::assign_pixel(p, f(r, c));
+                    //            dlib::assign_pixel(p, left_img(r, c));
                     //            dlib::assign_pixel(t[0](r, c), p.l);
                     //            dlib::assign_pixel(t[1](r, c), p.a);
                     //            dlib::assign_pixel(t[2](r, c), p.b);
-                    //            dlib::assign_pixel(p, d1(r, c));
+                    //            dlib::assign_pixel(p, right_img(r, c));
                     //            dlib::assign_pixel(t[3](r, c), p.l);
                     //            dlib::assign_pixel(t[4](r, c), p.a);
                     //            dlib::assign_pixel(t[5](r, c), p.b);
@@ -263,7 +263,7 @@ void load_sv_data(
             //    // get the images size and resize the t array
             //    for (int m = 0; m < img_depth; ++m)
             //    {
-            //        t[m].set_size(f.nr(), f.nc());
+            //        t[m].set_size(left_img.nr(), left_img.nc());
             //    }
 
             //    switch (secondary)
@@ -272,16 +272,16 @@ void load_sv_data(
             //    case 1:
             //        // loop through the images and assign each color channel to one 
             //        // of the array's of t
-            //        for (long r = 0; r < f.nr(); ++r)
+            //        for (long r = 0; r < left_img.nr(); ++r)
             //        {
-            //            for (long c = 0; c < f.nc(); ++c)
+            //            for (long c = 0; c < left_img.nc(); ++c)
             //            {
             //                dlib::rgb_pixel p;
-            //                dlib::assign_pixel(p, f(r, c));
+            //                dlib::assign_pixel(p, left_img(r, c));
             //                dlib::assign_pixel(t[0](r, c), p.red);
             //                dlib::assign_pixel(t[1](r, c), p.green);
             //                dlib::assign_pixel(t[2](r, c), p.blue);
-            //                dlib::assign_pixel(p, d1(r, c));
+            //                dlib::assign_pixel(p, right_img(r, c));
             //                dlib::assign_pixel(t[3](r, c), p.red);
             //                dlib::assign_pixel(t[4](r, c), p.green);
             //                dlib::assign_pixel(t[5](r, c), p.blue);

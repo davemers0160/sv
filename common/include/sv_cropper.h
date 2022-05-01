@@ -40,9 +40,9 @@ public:
 class sv_cropper
 {
     
-    dlib::chip_dims dims = dlib::chip_dims(32, 32);
-    uint32_t scale_x = 1;
-    uint32_t scale_y = 1;
+    dlib::chip_dims dims = dlib::chip_dims(20, 100);
+    // uint32_t scale_x = 1;
+    // uint32_t scale_y = 1;
 
     std::vector<cropper_stats> cr_stats;
     std::string recorder_filename = "cropper_stats.bin";
@@ -70,17 +70,17 @@ public:
     void set_scale_x(uint32_t x) { scale_x = x; }
     void set_scale_y(uint32_t y) { scale_y = y; }
 
-    void set_scale(std::pair<uint32_t, uint64_t> p)
-    {
-        scale_x = p.second;
-        scale_y = p.first;
-    }
+    // void set_scale(std::pair<uint32_t, uint64_t> p)
+    // {
+        // scale_x = p.second;
+        // scale_y = p.first;
+    // }
     
-    const uint32_t &get_scale_x() const { return scale_x; }
-    const uint32_t &get_scale_y() const { return scale_y; }
+    // const uint32_t &get_scale_x() const { return scale_x; }
+    // const uint32_t &get_scale_y() const { return scale_y; }
 
-    void set_expansion_factor(uint32_t val) { expansion_factor = val; }
-    const uint32_t &get_expansion_factor() const { return expansion_factor; }
+    // void set_expansion_factor(uint32_t val) { expansion_factor = val; }
+    // const uint32_t &get_expansion_factor() const { return expansion_factor; }
 
     std::string get_stats_filename(void) const { return recorder_filename; }
     void set_stats_filename(std::string fn)
@@ -220,23 +220,23 @@ public:
         array_type1 img_t;
         image_type1 gt_t;
 
-        switch (expansion_factor)
-        {
-            case 4:
-                m = 2;
-                e_f = 2;
-                break;
+        // switch (expansion_factor)
+        // {
+            // case 4:
+                // m = 2;
+                // e_f = 2;
+                // break;
 
-            case 8:
-                m = 1;
-                e_f = 4;
-                break;
+            // case 8:
+                // m = 1;
+                // e_f = 4;
+                // break;
 
-            default:
-                m = 2;
-                e_f = 1;
-                break;
-        }
+            // default:
+                // m = 2;
+                // e_f = 1;
+                // break;
+        // }
      
         // get the crops
         for (idx = 0; idx < image_depth; ++idx)
@@ -249,25 +249,25 @@ public:
         // @mem((gt_t.data).data, UINT16, 1, gt_t.nc(),gt_t.nr(),gt_t.nc()*2)
 
         // create the rotations from the base crop
-        array_type1 img_t2;
-        for (jdx = 0; jdx < e_f; ++jdx)
-        {
-            for (idx = 0; idx < image_depth; ++idx)
-            {
-                img_crops[jdx][idx] = rotate_90(img_t[idx], jdx * m);
-            }
-            gt_crops[jdx] = rotate_90(gt_t, jdx * m);
-        }
+        // array_type1 img_t2;
+        // for (jdx = 0; jdx < e_f; ++jdx)
+        // {
+            // for (idx = 0; idx < image_depth; ++idx)
+            // {
+                // img_crops[jdx][idx] = rotate_90(img_t[idx], jdx * m);
+            // }
+            // gt_crops[jdx] = rotate_90(gt_t, jdx * m);
+        // }
 
         // create the left-right flips from the rotations
-        for (jdx = 0; jdx < e_f; ++jdx)
-        {
+        // for (jdx = 0; jdx < 1; ++jdx)
+        // {
             for (idx = 0; idx < image_depth; ++idx)
             {
-                img_crops[jdx + e_f][idx] = dlib::fliplr(img_crops[jdx][idx]);
+                img_crops[1][idx] = dlib::flipud(img_crops[0][idx]);
             }
-            gt_crops[jdx + e_f] = dlib::fliplr(gt_crops[jdx]);
-        }
+            gt_crops[1] = dlib::flipud(gt_crops[0]);
+        //}
 
     }	// end of operator()    
  
@@ -275,7 +275,7 @@ public:
 // ----------------------------------------------------------------------------------------
 private:	
 
-    uint32_t expansion_factor = 8;
+    uint32_t expansion_factor = 2;
 
     template <typename image_type1>
     void make_random_cropping_rect(const image_type1& img, dlib::rectangle &rect_im, dlib::rectangle &rect_gt)
