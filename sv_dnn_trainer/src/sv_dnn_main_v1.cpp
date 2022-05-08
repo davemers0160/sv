@@ -169,6 +169,7 @@ int main(int argc, char** argv)
     std::vector<int32_t> gpu = { 0 };
     std::array<float, img_depth> avg_color;
     uint16_t gt_max = 0;
+    float gt_scale = 3.0;
 
     // these are the parameters to load in an image to make sure that it is the correct size
     // for the network.  The first number makes sure that the image is a modulus of the number
@@ -336,7 +337,7 @@ int main(int argc, char** argv)
         std::cout << "Loading training images..." << std::endl;
         
         start_time = chrono::system_clock::now();
-        load_sv_data(training_file, train_data_directory, mod_params, tr, gt_train, tr_image_files);
+        load_sv_data(training_file, train_data_directory, mod_params, tr, gt_train, gt_scale, tr_image_files);
         stop_time = chrono::system_clock::now();
 
         elapsed_time = chrono::duration_cast<d_sec>(stop_time - start_time);
@@ -378,7 +379,7 @@ int main(int argc, char** argv)
         std::cout << "Loading test images..." << std::endl;
 
         start_time = chrono::system_clock::now();
-        load_sv_data(test_file, test_data_directory, mod_params, te, gt_test, te_image_files);
+        load_sv_data(test_file, test_data_directory, mod_params, te, gt_test, gt_scale, te_image_files);
         stop_time = chrono::system_clock::now();
 
         elapsed_time = chrono::duration_cast<d_sec>(stop_time - start_time);
@@ -408,7 +409,10 @@ int main(int argc, char** argv)
         // network to cover the data input range
         if ((max_val_tr - min_val_tr + 1) > filter_num[0])
             filter_num[0] = (max_val_tr - min_val_tr + 1);
-        
+
+        std::cout << "min groundtruth value: " << min_val_tr << std::endl;
+        std::cout << "max groundtruth value: " << max_val_tr << std::endl << std::endl;
+
         ///////////////////////////////////////////////////////////////////////////////
         // Step 2: Setup the network
         ///////////////////////////////////////////////////////////////////////////////

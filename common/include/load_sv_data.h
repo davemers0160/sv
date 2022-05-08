@@ -30,11 +30,12 @@ extern const uint32_t img_depth;
 extern const uint32_t secondary;
 
 void load_sv_data(
-    const std::vector<std::vector<std::string>> training_file, 
+    const std::vector<std::vector<std::string>> training_file,
     const std::string data_directory,
     std::pair<uint32_t, uint32_t> mod_params,
-    std::vector<std::array<dlib::matrix<uint8_t>, img_depth>> &t_data,
-    std::vector<dlib::matrix<uint16_t>> &gt,
+    std::vector<std::array<dlib::matrix<uint8_t>, img_depth>>& t_data,
+    std::vector<dlib::matrix<uint16_t>>& gt,
+    float gt_scale,
     std::vector<std::pair<std::string, std::string>> &image_files
 )
 {
@@ -298,7 +299,11 @@ void load_sv_data(
         }
         
         t_data.push_back(t);
-        gt.push_back(g);
+
+        if(gt_scale == 1.0)
+            gt.push_back(g);
+        else
+            gt.push_back(dlib::matrix_cast<uint16_t>(dlib::matrix_cast<float>(g)/ gt_scale));
 
     }   // end of the read in data loop
 
